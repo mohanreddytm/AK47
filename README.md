@@ -24,6 +24,27 @@ Open `http://localhost:3000`. In demo mode, all data is fictional and resets whe
 
 The customer entrance is `http://localhost:3000/tables/demo`. Choose a table to open its menu, cart and order tracker.
 
+### If setup stops with ECONNRESET
+
+This means a dependency download was interrupted. A subsequent `react-scripts is not recognized` message means the frontend installation did not finish. The deprecation and audit notices are separate from that network failure; they do not mean the install succeeded.
+
+Stop old app servers first. In PowerShell, run the following commands **one at a time** from AK47:
+
+```powershell
+npm run setup
+```
+
+Wait for **Dependencies ready** before starting `npm run demo`. For a single PowerShell block that starts the app only when setup succeeds:
+
+```powershell
+npm run setup
+if ($LASTEXITCODE -eq 0) { npm run demo }
+```
+
+Setup uses the pinned lockfiles and five npm download retries, preserves existing environment files, and records an interrupted setup so the launcher can refuse a partial installation. If network resets persist, retry on a stable connection; no lockfile deletion, global react-scripts installation or forced audit upgrade is needed. See [npm retry settings](https://docs.npmjs.com/cli/v11/using-npm/config/#fetch-retries).
+
+On Windows, the launcher invokes the npm CLI through Node without shell argument concatenation. If either app exits, it stops the process trees it started, including the API child. It does not terminate unrelated Node processes. Test this behavior with `npm run test:scripts`; CI covers Linux and Windows on Node 24.
+
 ### Update an existing clone
 
 Commit or safely stash your own source changes first; keep your local environment files. Then, from AK47:
