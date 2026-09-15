@@ -1,0 +1,17 @@
+{
+  "name": "eathub-workspace",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "node scripts/dev.mjs",
+    "demo": "node scripts/dev.mjs --demo",
+    "db:check": "npm --prefix backend/eathubbackend run db:check",
+    "db:migrate": "npm --prefix backend/eathubbackend run db:migrate",
+    "test:backend": "npm --prefix backend/eathubbackend test",
+    "test:frontend": "npm --prefix frontend/eathubfrontone test -- --watchAll=false --runInBand",
+    "build": "npm --prefix frontend/eathubfrontone run build",
+    "test:e2e": "npm --prefix frontend/eathubfrontone run test:e2e"
+  },
+  "engines": {"node": ">=20"}
+}
