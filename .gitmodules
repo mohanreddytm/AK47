@@ -1,0 +1,6 @@
+[submodule "backend/eathubbackend"]
+	path = backend/eathubbackend
+	url = https://github.com/mohanreddytm/eathubbackend.git
+[submodule "frontend/eathubfrontone"]
+	path = frontend/eathubfrontone
+	url = https://github.com/mohanreddytm/eathubfrontone.git

@@ -1,0 +1,40 @@
+name: Verify coordinated EatHub release
+on:
+  pull_request:
+  push:
+    branches: [main, codex/dashboard-release]
+permissions:
+  contents: read
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            backend/eathubbackend/package-lock.json
+            frontend/eathubfrontone/package-lock.json
+      - run: npm run setup
+      - run: npm run test:backend
+      - run: npm run test:frontend
+        env:
+          CI: true
+      - run: npm run build
+        env:
+          CI: true
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend/eathubfrontone
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-previews
+          path: |
+            frontend/eathubfrontone/docs/previews/
+            frontend/eathubfrontone/e2e-results/
