@@ -65,7 +65,7 @@ The API runs on port 8000 and the UI on 3000. `http://localhost:8000/health` sho
 - **Platform operations:** restaurant search/details, activity summaries and confirmed activate/deactivate/suspend actions.
 - **Backend repairs:** repeatable schema checks, server pricing, scoped authorization, legacy item-name recovery, idempotent order/payment handling, safe errors and test-only verified Razorpay checkout when configured.
 
-This is a code release. It does not change your local database, hosting settings or merchant account automatically. See [backend operations](backend/eathubbackend/OPERATIONS.md) for Neon migration, credential rotation, provider configuration and deployment steps. Refunds, live multi-restaurant payment settlement, historical reconciliation and recovery of expired guest sessions are not enabled.
+This is a code release. It does not change your local database, hosting settings or merchant account automatically. See [backend operations](backend/eathubbackend/OPERATIONS.md) for Neon migration, credential rotation, provider configuration and deployment steps. Full and item-based partial refunds for completed Razorpay test payments are now available; see [refund setup, API, schema and tests](backend/eathubbackend/REFUNDS.md). Live multi-restaurant payment settlement, historical reconciliation and recovery of expired guest sessions are not enabled.
 
 ## Validation
 
@@ -75,7 +75,7 @@ npm run test:frontend
 npm run build
 ```
 
-The automated suite covers 19 backend and 7 frontend checks using disposable data. The browser smoke workflow starts the matching demo API, exercises all roles, and records screenshots:
+The automated suite covers 32 backend and 15 frontend checks using disposable data. The browser smoke workflow starts the matching demo API, exercises all roles, and records screenshots:
 
 ```sh
 cd frontend/eathubfrontone
@@ -85,3 +85,24 @@ npm run test:e2e
 ```
 
 Keep ports 3000 and 8000 free while the browser tests run. Your full historical Neon database, live hosting, printer and real merchant test account still need checks in your environment. For deployment, apply the database migration first and deploy the pinned backend/frontend together. The frontend includes SPA fallback configuration for Vercel and compatible static hosts.
+
+## Refund feature checkout
+
+The refund feature is published on `codex/refund-system`. From an existing AK47 checkout, preserve your own local changes, then run:
+
+```sh
+git fetch origin codex/refund-system
+git switch codex/refund-system
+git pull --ff-only origin codex/refund-system
+git submodule update --init --recursive
+npm run setup
+```
+
+For your Neon data, take a backup, configure the test merchant environment described in the refund guide, then run `npm run db:migrate` and `npm run db:check` before `npm run dev`. The normal demo has counter payments; it cannot issue Razorpay refunds. The dedicated browser fixture exercises refunds without credentials:
+
+```sh
+npm run build
+npm run test:e2e:refunds
+```
+
+Do not mix an old backend checkout with the new refund UI. The saved payment ID, schema migration and signed webhook handler must all be present.
